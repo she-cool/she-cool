@@ -34,17 +34,16 @@ header nav a{margin-left:20px;font-weight:600;color:var(--accent);}
 .logo-container h1{
   font-family:'Manrope',sans-serif;
   font-weight:700;
-  font-size:64px;
+  font-size:96px;
   letter-spacing:4px;
   color:var(--accent);
   display:flex;
   justify-content:center;
-  transition:all 0.5s ease;
 }
 
 .logo-container h1 span{
   display:inline-block;
-  transition:transform 0.6s ease, opacity 0.6s ease;
+  transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
 .logo-container p{
@@ -57,44 +56,49 @@ header nav a{margin-left:20px;font-weight:600;color:var(--accent);}
 section{padding:60px 20px;}
 footer{padding:40px 20px;border-top:1px solid #eee;color:var(--accent);text-align:center;font-size:14px;}
 
-/* Moodboard poziomy */
+/* Moodboard poziomy z iframe */
 .moodboard{
   padding:60px 0;
   background:#fefefe;
-  overflow:hidden;
-  position:relative;
-}
-.moodboard h2{text-align:center;margin-bottom:40px;font-weight:600;}
-.mood-scroll{
+  overflow-x:auto; /* manualne scrollowanie */
   display:flex;
-  flex-wrap:nowrap;
-  transition: transform 0.5s ease;
-  cursor:pointer;
+  gap:20px;
+  scrollbar-width: thin;
+  -webkit-overflow-scrolling: touch;
 }
-.mood-scroll img{
-  height:400px;
-  object-fit:cover;
-  flex-shrink:0;
-  margin-right:0; /* brak odstępów */
-  border-radius:12px;
-  transition: transform 0.5s ease;
+.moodboard::-webkit-scrollbar {
+  height: 8px;
 }
-.mood-scroll:hover{
-  animation: scroll-left 20s linear infinite;
+.moodboard::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 4px;
 }
-.mood-scroll img:hover{
-  transform:scale(1.05);
+.moodboard::-webkit-scrollbar-track {
+  background: #fefefe;
 }
 
-/* Animacja przesuwania w lewo przy hover */
+.moodboard iframe{
+  border:none;
+  width:345px;
+  height:713px;
+  flex-shrink:0;
+  transition: transform 0.5s ease;
+}
+.moodboard:hover iframe{
+  animation: scroll-left 8s linear infinite; /* automatyczne przesuwanie przy hover */
+}
+.moodboard iframe:hover{
+  transform: scale(1.03);
+}
+
 @keyframes scroll-left{
   0%{transform: translateX(0);}
   100%{transform: translateX(-50%);}
 }
 
 @media(max-width:768px){
-  .logo-container h1{font-size:48px;}
-  .mood-scroll img{height:250px;}
+  .logo-container h1{font-size:64px;}
+  .moodboard iframe{width:90%; height:400px;}
 }
 </style>
 </head>
@@ -120,20 +124,11 @@ footer{padding:40px 20px;border-top:1px solid #eee;color:var(--accent);text-alig
   <p style="margin-top:12px;color:#555;">Our collection is designed for women who lead, move, and stay fearless. Fashion-forward, sporty-chic, and unapologetically bold.</p>
 </section>
 
-<!-- Moodboard poziomy -->
+<!-- Moodboard hybrydowy z Pinterest iframe -->
 <section class="moodboard">
-  <h2>Moodboard</h2>
-  <div class="mood-scroll" id="moodScroll">
-    <img src="https://images.unsplash.com/photo-1514995669114-7f1e8f30b9b9?crop=entropy&cs=tinysrgb&fit=crop&h=600&w=400" alt="Mood 1">
-    <img src="https://images.unsplash.com/photo-1520975919985-5f8e4b3f7f2b?crop=entropy&cs=tinysrgb&fit=crop&h=600&w=400" alt="Mood 2">
-    <img src="https://images.unsplash.com/photo-1520975698519-1b51f24d6f0a?crop=entropy&cs=tinysrgb&fit=crop&h=600&w=400" alt="Mood 3">
-    <img src="https://images.unsplash.com/photo-1503341455253-2b2b4a6f3b60?crop=entropy&cs=tinysrgb&fit=crop&h=600&w=400" alt="Mood 4">
-    <!-- powtarzamy zdjęcia, aby płynnie scrollowały -->
-    <img src="https://images.unsplash.com/photo-1514995669114-7f1e8f30b9b9?crop=entropy&cs=tinysrgb&fit=crop&h=600&w=400" alt="Mood 1">
-    <img src="https://images.unsplash.com/photo-1520975919985-5f8e4b3f7f2b?crop=entropy&cs=tinysrgb&fit=crop&h=600&w=400" alt="Mood 2">
-    <img src="https://images.unsplash.com/photo-1520975698519-1b51f24d6f0a?crop=entropy&cs=tinysrgb&fit=crop&h=600&w=400" alt="Mood 3">
-    <img src="https://images.unsplash.com/photo-1503341455253-2b2b4a6f3b60?crop=entropy&cs=tinysrgb&fit=crop&h=600&w=400" alt="Mood 4">
-  </div>
+  <iframe src="https://assets.pinterest.com/ext/embed.html?id=385339311885864897" scrolling="no"></iframe>
+  <iframe src="https://assets.pinterest.com/ext/embed.html?id=385339311887827125" scrolling="no"></iframe>
+  <iframe src="https://assets.pinterest.com/ext/embed.html?id=385339311888222846" scrolling="no"></iframe>
 </section>
 
 <footer>
@@ -148,17 +143,24 @@ logo.textContent = '';
 for(let i=0;i<text.length;i++){
   const span = document.createElement('span');
   span.textContent = text[i];
+  span.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
   logo.appendChild(span);
 }
 
-// scroll animation - letters disperse
-window.addEventListener('scroll',()=>{
+const letters = logo.querySelectorAll('span');
+
+window.addEventListener('scroll', ()=>{
   const scrollY = window.scrollY;
-  const letters = logo.querySelectorAll('span');
+
   letters.forEach((span,i)=>{
-    const offset = Math.min(scrollY*0.5 + i*3, 120);
-    span.style.transform = `translate(${(i%2===0? -offset: offset)}px, ${scrollY*0.3}px) rotate(${(i%2===0? -5:5)}deg)`;
-    span.style.opacity = Math.max(1 - scrollY/500, 0.3);
+    if(scrollY === 0){
+      span.style.transform = 'translate(0,0) rotate(0deg)';
+      span.style.opacity = '1';
+    } else {
+      const offset = Math.min(scrollY * 1 + i * 5, 200);
+      span.style.transform = `translate(${(i%2===0 ? -offset : offset)}px, ${scrollY*0.5}px) rotate(${(i%2===0 ? -10 : 10)}deg)`;
+      span.style.opacity = Math.max(1 - scrollY/300, 0.2);
+    }
   });
 })
 
